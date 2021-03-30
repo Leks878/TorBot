@@ -4,6 +4,7 @@ MAIN MODULE
 import argparse
 import socket
 import socks
+import tldextract
 
 from requests.exceptions import HTTPError
 
@@ -128,7 +129,11 @@ def main():
     TorBot's Core
     """
     args = get_args()
-    connect(args.ip, args.port, args.no_socks)
+    if args.url:
+        extractedResult = tldextract.extract(args.url)
+        # we don't need to connect to tor for commmerical sites, this tremendously speeds up searches
+        if extractedResult.suffix != 'com':
+            connect(args.ip, args.port, args.no_socks)
 
     if args.gather:
         collect_data(args.url)
